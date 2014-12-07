@@ -1,0 +1,53 @@
+<div id="water_buttons">
+    <a href="#/"><button class="btn btn-primary">Go back</button></a>
+</div>
+
+<div class="row" ng-repeat="row in water.violations" id="water_data">
+    <strong>Violation #{{ row.VIOID }}</strong>
+    <table class="table table-hover">
+        <tr>
+            <td width="20%">Violation Start Date</td>
+            <td width="80%">{{row.COMPPERBEGINDATE}}</td>
+        </tr>
+        <tr>
+            <td>Violation End Date</td>
+            <td>{{row.COMPPERENDDATE}}</td>
+        </tr>
+        <tr>
+            <td>Enforcement Date</td>
+            <td>{{row.ENFDATE}}</td>
+        </tr>
+        <tr>
+            <td>Enforcement Action</td>
+            <td>{{row.ENFACTIONNAME}}</td>
+        </tr>
+        <tr>
+            <td>Contaminant</td>
+            <td>{{row.CNAME}} 
+                <a href="https://en.wikipedia.org/wiki/Special:Search/{{row.CNAME}}" target="new">
+                    <button class="btn btn-default">Wiki</button>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>Definition</td>
+            <td>{{row.DEFINITION}}</td>
+        </tr>
+        <tr>
+            <td>Health Effects</td>
+            <td>{{row.HEALTHEFFECTS}}</td>
+        </tr>
+        <tr>
+            <td>Contaminant Sources</td>
+            <td>{{row.SOURCES}}</td>
+        </tr>
+        <tr>
+            <td>Facility Name</td>
+            <td>{{row.PWSNAME}}</td>
+        </tr>
+        <tr>
+            <td>Status</td>
+            <td>{{row.VNAME}}</td>
+        </tr>
+    </table>
+</div>

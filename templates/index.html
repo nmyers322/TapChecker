@@ -1,0 +1,40 @@
+<!-- Loading template -->
+<div class="row" data-ng-hide="my_zip">
+    <div data-ng-hide="geo_failed">
+        <p>To get your zip code automatically, you must accept the location agreement listed on this page. You can also enter a zip code manually above.</p>
+    </div>
+    <div data-ng-show="geo_failed">
+        <p>We couldn't determine your location. Enter a U.S. zip code above.</p>
+    </div>
+</div>
+<!-- Show data template -->
+<div data-ng-show="my_zip">
+    <div class="row">
+        
+        <!-- tap water buttons -->
+        
+        <a href="#/water" data-ng-hide="water.loading || water.clean == true">
+            <button class="btn btn-block btn-danger">
+                <span class="glyphicon glyphicon-tint"></span> Tap water: {{ water.title }} 
+            </button>
+        </a>
+        <a href="#/water" data-ng-hide="water.loading || water.clean == false">
+            <button class="btn btn-block btn-primary">
+                <span class="glyphicon glyphicon-tint"></span> Tap water: {{ water.title }} 
+            </button>
+        </a>
+        <button class="btn btn-block btn-default" data-ng-hide="water.loading == false">
+            <img src="img/loading.gif"> Tap water: Loading....
+        </button>
+
+        <!-- info button -->
+        <button class="btn btn-block btn-default" data-ng-click="info()">
+            <span class="glpyhicon glyphicon-info"></span> Info
+        </button>
+        <div class="well" data-ng-show="show_info" style="margin: 10px;">
+            <p>This app is designed to help you identify environmental hazards in your area using data gathered and aggregated from the EPA (Environmental Protection Agency) database. It will only work in the United States, since that is where the data is gathered. Created by Nathanial Myers in December of 2014. </p>
+        </div>
+        
+        
+    </div>
+</div>
