@@ -243,7 +243,10 @@ app.controller("BodyController", function($scope, $http, $q) {
                         //Sometimes the case isn't open, but the enforcement wasnt "achieved"!!
                         // That means they issued a warning or penalty, but it wasnt resolved!
                         if(compareDate(today, their_date) === true || 
-                            xml[resource.tableName][i]["ENFACTIONNAME"] != "St Compliance achieved"){
+                            xml[resource.tableName][i]["ENFACTIONNAME"] != "St Compliance achieved" || 
+                            xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed Compliance achieved" || 
+                            xml[resource.tableName][i]["ENFACTIONNAME"] != "St BCA signed" || 
+                            xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed No longer subject to Rule"){
                             //They do!! Add it to data
                             resource_data.push(xml[resource.tableName][i]);
                         }
