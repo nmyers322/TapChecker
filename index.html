@@ -85,7 +85,7 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                   <ul class="nav navbar-nav">
-                    <li><a id="nav_my_zip" data-ng-show="my_zip" data-ng-click="resetData()" href="#/">
+                    <li><a id="nav_my_zip" data-ng-show="my_zip" data-ng-click="resetData()" href="#/" class="clickCollapse">
                         {{my_zip}} <span class="glyphicon glyphicon-refresh"></span>
                     </a></li>
                   </ul>
@@ -93,7 +93,7 @@
                     <div class="form-group">
                       <input type="text" placeholder="Zip code" class="form-control" data-ng-model="lookup_zip">
                     </div>
-                    <button type="submit" class="btn btn-success" data-ng-click="lookup()" data-ng-disabled="lookup_zip.length != 5">
+                    <button type="submit" class="btn btn-success clickCollapse" data-ng-click="lookup()" data-ng-disabled="lookup_zip.length != 5">
                         <span class="glyphicon glyphicon-map-marker"></span> Lookup!
                     </button>
                   </form>

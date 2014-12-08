@@ -419,4 +419,19 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
     //Try to initially get the geo data
     geolocationData();
 
+
+
+});
+
+
+//hack to fix the non-collapsing menu on menu item click
+$(document).ready(function () {
+    
+    $(".clickCollapse").click(function (event) {
+        //bootstrap collapses the menubar at 768 pixels by default
+        if($(window).width() <= 768){
+            $(".navbar-collapse").collapse('hide');
+        }
+    });
+
 });
