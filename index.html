@@ -32,6 +32,9 @@
             font-size: 15px;
             font-family: Sans-serif;
         }
+        thead{
+            background-color: #b9b9b9;
+        }
         a:hover{
             text-decoration: none;
         }
@@ -144,14 +147,24 @@
         <script src="js/infinite-scroll.js"></script>
         <!-- facebook share -->
         <div id="fb-root"></div>
-        <script>(function(d, s, id) {
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) return;
-          js = d.createElement(s); js.id = id;
-          js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '1502630943332748',
+              xfbml      : true,
+              version    : 'v2.2'
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "//connect.facebook.net/en_US/sdk.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
         <!-- app js -->
-        <script src="js/HealthHazards.js"></script>
+        <script src="js/TapChecker.js"></script>
     </body>
 </html>
