@@ -88,47 +88,43 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td width="20%">Violation Start Date</td>
-                        <td width="80%">{{row.COMPPERBEGINDATE}}</td>
+                        <td width="20%"><strong>Enforcement Action</strong></td>
+                        <td width="80%">{{row.ENFACTIONNAME}}</td>
                     </tr>
                     <tr>
-                        <td>Violation End Date</td>
-                        <td>{{row.COMPPERENDDATE}}</td>
+                        <td><strong>Date Range</strong></td>
+                        <td>{{row.COMPPERBEGINDATE}} - {{row.COMPPERENDDATE}}</td>
                     </tr>
                     <tr>
-                        <td>Enforcement Date</td>
+                        <td><strong>Enforcement Date</strong></td>
                         <td>{{row.ENFDATE}}</td>
                     </tr>
                     <tr>
-                        <td>Enforcement Action</td>
-                        <td>{{row.ENFACTIONNAME}}</td>
-                    </tr>
-                    <tr>
-                        <td>Contaminant</td>
+                        <td><strong>Contaminant</strong></td>
                         <td>{{row.CNAME}} 
                             <a href="https://en.wikipedia.org/wiki/Special:Search/{{row.CNAME}}" target="new">
                                 <button class="btn btn-default">Wiki</button>
                             </a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Definition</td>
+                    <tr data-ng-show="row.DEFINITION != ''">
+                        <td><strong>Definition</strong></td>
                         <td>{{row.DEFINITION}}</td>
                     </tr>
-                    <tr>
-                        <td>Health Effects</td>
+                    <tr data-ng-show="row.HEALTHEFFECTS != '' && row.HEALTHEFFECTS != undefined">
+                        <td><strong>Health Effects</strong></td>
                         <td>{{row.HEALTHEFFECTS}}</td>
                     </tr>
-                    <tr>
-                        <td>Contaminant Sources</td>
+                    <tr data-ng-show="row.SOURCES != ''">
+                        <td><strong>Contaminant Sources</strong></td>
                         <td>{{row.SOURCES}}</td>
                     </tr>
                     <tr>
-                        <td>Facility Name</td>
+                        <td><strong>Facility Name</strong></td>
                         <td>{{row.PWSNAME}}</td>
                     </tr>
                     <tr>
-                        <td>Violation Name</td>
+                        <td><strong>Status</strong></td>
                         <td>{{row.VNAME}}</td>
                     </tr>
                 </tbody>
