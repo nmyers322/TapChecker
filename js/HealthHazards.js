@@ -1,3 +1,23 @@
+var string_table = {
+    click_to_load: "Click to load data",
+    fetching_data: "Fetching data...",
+    open_violations: " possible violations.",
+    no_violations: "No violations!",
+    no_data: "The EPA does not have any data in your zip code."
+}
+
+var resources = ["water"];
+var tableNames = ["SDW_CONTAM_VIOL_ZIP"];
+var zipNames = ["geolocation_zip"];
+var large_data = {
+    "data":{
+        "water": []
+    },
+    "violations":{
+        "water": []
+    }
+}
+
 var months = {
     "JAN": 1, 
     "FEB": 2, 
@@ -13,9 +33,8 @@ var months = {
     "DEC": 12
 }
 
-var loading_string = "Loading...";
 
-var api_entry = "http://iaspub.epa.gov/enviro/efservice/";
+var epa_api_entry_url = "http://iaspub.epa.gov/enviro/efservice/";
 
 //Quicksort from http://en.literateprograms.org/Quicksort_%28JavaScript%29
 // Slightly modified to accept a key for comparison 
@@ -76,7 +95,7 @@ function compareDate(today, their_date){
 }
 
 //Let's start the app
-var app = angular.module('HealthHazard', ['ngRoute']);
+var app = angular.module('HealthHazard', ['ngRoute', 'infinite-scroll']);
 
 // Configure routes
 app.config(['$routeProvider',
@@ -97,7 +116,7 @@ app.config(['$routeProvider',
 
 
 // This controls most of the functions of the app
-app.controller("BodyController", function($scope, $http, $q) {
+app.controller("BodyController", function($scope, $http, $q, $location) {
     
     // The zip code controls everything about this app.
     // EPA data is able to be looked up by ZIP code, 
@@ -115,19 +134,24 @@ app.controller("BodyController", function($scope, $http, $q) {
     var canceler;
 
     //show or hide the info on front page
-    $scope.show_info = false;
+    $scope.show_info = true;
 
     //Set up resources:
-    // Local tap water data
+    //$scope.resetData();
+    // // Local tap water data
     $scope.water = {
         name: "water",
-        loading: true,
+        loading: false,
+        loaded: false,
         clean: true,
         tableName: "SDW_CONTAM_VIOL_ZIP",
         zipName: "geolocation_zip",
-        title: loading_string,
+        title: string_table.click_to_load,
         data: [],
-        violations: []
+        dataLength: 0,
+        violations: [],
+        violationsLength: 0,
+        viewing: ""
     }
 
     // Function to get user's zip code from geolocation data, then callback 
@@ -161,7 +185,7 @@ app.controller("BodyController", function($scope, $http, $q) {
                     var re = /^[^\d]*([\d]*)[.]*/i;
                     $scope.my_zip = address.match(re)[1];
                     $scope.$apply();
-                    populateData();
+                    //populateData();
                 }
             });
         }
@@ -183,24 +207,24 @@ app.controller("BodyController", function($scope, $http, $q) {
     }
 
     //Populate the data once a zip code is found
-    function populateData() {
+    function populateData(resource) {
 
-        //Start by getting the local water info
-        fetchResource($scope.water);
+        resource.loading = true;
+        resource.title = string_table.fetching_data;
+        resource.loaded = false;
+        //$scope.$apply();
+        fetchResource(resource);
+
     }
     $scope.populateData = populateData;
 
     //A generic method for fetching data
     function fetchResource(resource){
 
-        //Show loading
-        resource.loading = true;
-        resource.title = loading_string;
-
         canceler = $q.defer();
 
         //Set up the url
-        var fullUrl = api_entry;
+        var fullUrl = epa_api_entry_url;
         fullUrl += resource.tableName + "/" + resource.zipName;
         fullUrl += "/=/";
         fullUrl += $scope.my_zip;
@@ -223,57 +247,103 @@ app.controller("BodyController", function($scope, $http, $q) {
                     // Parse the returned xml
                     var xml = $.xml2json( data );
 
-                    // Construct a "today" object    
-                    var today = new Date();
-                    today = today.toLocaleDateString();
-                    today = today.split("/", 3);
-                    today = { year: today[2].slice(-2), month: today[0], day: today[1] }
+                    //Check if there's data
+                    if(xml[resource.tableName] !== undefined){
+                        // Construct a "today" object    
+                        var today = new Date();
+                        today = today.toLocaleDateString();
+                        today = today.split("/", 3);
+                        today = { year: today[2].slice(-2), month: today[0], day: today[1] }
 
-                    var their_date;
+                        var their_date;
 
-                    //Loop through each row in returned data
-                    for( var i = 0; i < xml[resource.tableName].length; i++ ){
-                        //first standardize the date row
-                        their_date = xml[resource.tableName][i]["COMPPERENDDATE"];
-                        their_date = their_date.slice(-2) + "-" + 
-                            months[their_date.slice(3, 5)] + "-" + 
-                            their_date.slice(0, 1);
-                            xml[resource.tableName][i]["their_date"] = their_date
-                        // Check if they have an open case
-                        //Sometimes the case isn't open, but the enforcement wasnt "achieved"!!
-                        // That means they issued a warning or penalty, but it wasnt resolved!
-                        if(compareDate(today, their_date) === true || 
-                            xml[resource.tableName][i]["ENFACTIONNAME"] != "St Compliance achieved" && 
-                            xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed Compliance achieved" && 
-                            xml[resource.tableName][i]["ENFACTIONNAME"] != "St BCA signed" && 
-                            xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed No longer subject to Rule"){
-                            //They do!! Add it to data
-                            resource_data.push(xml[resource.tableName][i]);
+                        //Loop through each row in returned data
+                        for( var i = 0; i < xml[resource.tableName].length; i++ ){
+                            //first standardize the date row
+                            their_date = xml[resource.tableName][i]["COMPPERENDDATE"];
+                            their_date = their_date.slice(-2) + "-" + 
+                                months[their_date.slice(3, 5)] + "-" + 
+                                their_date.slice(0, 1);
+                                xml[resource.tableName][i]["their_date"] = their_date
+                            // Check if they have an open case
+                            // Sometimes the case isn't open, but the enforcement wasnt "achieved"!!
+                            // That means they issued a warning or penalty, but it wasnt resolved!
+                            if(compareDate(today, their_date) === true || 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "St Compliance achieved" && 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed Compliance achieved" && 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "St BCA signed" && 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed BCA signed" && 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed No longer subject to Rule" && 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "St No longer subject to Rule" &&
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "Fed No addtl Formal Action needed" && 
+                                xml[resource.tableName][i]["ENFACTIONNAME"] != "St No addtl Formal Action needed" && 
+                                xml[resource.tableName][i]["VNAME"] != "CCR Complete Failure to Report" && 
+                                xml[resource.tableName][i]["VNAME"] != "Initial Tap Sampling for Pb and Cu"){
+                                //They do!! Add it to data
+                                resource_data.push(xml[resource.tableName][i]);
+                            }
+
+                        }
+                        //Sort the original array
+                        qsort(xml[resource.tableName], 0, xml[resource.tableName].length, "their_date");
+                        //Sort the violations
+                        qsort(resource_data, 0, resource_data.length, "their_date");
+
+                        //Now update the resource objects values
+                        if(resource_data.length > 0){
+                            //Uh oh, there are violations.
+                            resource.title = resource_data.length + string_table.open_violations;
+                            resource.loading = false;
+                            resource.loaded = true;
+                        } else {
+                            resource.title = string_table.no_violations;
+                            //resource.title += " (" + xml[resource.tableName].length + " past violations)";
+                            resource.loading = false;
+                            resource.loaded = true;
+                        }
+                        //This data can be huge. Probably would be better to process
+                        // server side. Oh well... limited time!!
+                        //resource.data = xml[resource.tableName];
+                        //Idea--- let's put the first 10 results in the resources 'data'
+                        // Then dynamically load more.
+                        large_data["data"][resource.name] = xml[resource.tableName];
+                        resource.data = [];
+                        for( var i = 0; i < 10; i++ ){
+                            if(xml[resource.tableName][i] !== undefined){
+                                resource.data.push(xml[resource.tableName][i]);
+                            }
                         }
 
-                    }
-                    //Sort the original array
-                    qsort(xml[resource.tableName], 0, xml[resource.tableName].length, "their_date");
-                    //Sort the violations
-                    qsort(resource_data, 0, resource_data.length, "their_date");
-
-                    //Now update the resource objects values
-                    if(resource_data.length > 0){
-                        //Uh oh, there are violations.
-                        resource.title = resource_data.length + " open violations";
-                        resource.loading = false;
+                        //You know what, do the same for violations
+                        large_data["violations"][resource.name] = resource_data;
+                        resource.violations = [];
+                        for( var i = 0; i < 10; i++ ){
+                            if(resource_data[i] !== undefined){
+                                resource.violations.push(resource_data[i]);
+                            }
+                        }
+                        resource.dataLength = xml[resource.tableName].length;
+                        resource.violationsLength = resource_data.length;
+                        resource.viewing = "Open Violations";
+                        if(resource.violations.length > 0){
+                            resource.clean = false;
+                        } else {
+                            resource.clean = true;
+                        }
                     } else {
-                        resource.title = "No open violations! (" + 
-                            xml[resource.tableName].length + " past violations)";
-                        resource.loading = false;
-                    }
-                    resource.data = xml[resource.tableName];
-                    resource.violations = resource_data;
-                    if(resource.violations.length > 0){
-                        resource.clean = false;
-                    } else {
+                        //There's no data.
+                        resource.data = [];
+                        resource.violations = [];
+                        resource.dataLength = 0;
+                        resource.violationsLength = 0;
+                        resource.viewing = "";
                         resource.clean = true;
+                        resource.title = string_table.no_data;
+                        resource.loaded = true;
+                        resource.loading = false;
                     }
+
+                        
 
                 }
                 catch (err) {
@@ -299,7 +369,8 @@ app.controller("BodyController", function($scope, $http, $q) {
             canceler.resolve();
         }
         geo_failed = false;
-        populateData();
+        $scope.resetData();
+        $location.path("#/");
     }
 
     $scope.info = function(){
@@ -307,6 +378,41 @@ app.controller("BodyController", function($scope, $http, $q) {
             $scope.show_info = false;
         } else {
             $scope.show_info = true;
+        }
+    }
+
+    $scope.resetData = function(){
+        for(var i = 0; i < resources.length; i++){
+            $scope[resources[i]] = {
+                name: resources[i],
+                loading: false,
+                loaded: false,
+                clean: true,
+                tableName: tableNames[i],
+                zipName: zipNames[i],
+                title: string_table.click_to_load,
+                data: [],
+                violations: [],
+                viewing: ""
+            }
+        }
+    }
+
+    $scope.changeView = function(resource){
+        if(resource.viewing === "Open Violations"){
+            resource.viewing = "Open and Closed Violations";
+        } else {
+            resource.viewing = "Open Violations";
+        }
+    }
+
+    $scope.loadMore = function(resource, where){
+        where = where || "violations";
+        var last_index = resource[where].length - 1;
+        for( var i = 1; i <= 4; i++ ){
+            if(large_data[where][resource.name][i + last_index] !== undefined){
+                resource[where].push(large_data[where][resource.name][i + last_index]);
+            }
         }
     }
 
