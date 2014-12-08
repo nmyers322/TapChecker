@@ -4,7 +4,7 @@ var string_table = {
     open_violations: " possible violations.",
     no_violations: "No violations!",
     no_data: "The EPA does not have any data in your zip code."
-}
+};
 
 var resources = ["water"];
 var tableNames = ["SDW_CONTAM_VIOL_ZIP"];
@@ -16,7 +16,7 @@ var large_data = {
     "violations":{
         "water": []
     }
-}
+};
 
 var months = {
     "JAN": 1, 
@@ -31,22 +31,23 @@ var months = {
     "OCT": 10, 
     "NOV": 11, 
     "DEC": 12
-}
+};
 
+//for google map api
+var lat = 0;
+var lng = 0;
 
 var epa_api_entry_url = "http://iaspub.epa.gov/enviro/efservice/";
 
 //Quicksort from http://en.literateprograms.org/Quicksort_%28JavaScript%29
 // Slightly modified to accept a key for comparison 
-Array.prototype.swap=function(a, b)
-{
+Array.prototype.swap=function(a, b){
     var tmp=this[a];
     this[a]=this[b];
     this[b]=tmp;
 }
 
-function partition(array, begin, end, pivot, comparison)
-{
+function partition(array, begin, end, pivot, comparison){
     var piv=array[pivot];
     array.swap(pivot, end-1);
     var store=begin;
@@ -62,8 +63,7 @@ function partition(array, begin, end, pivot, comparison)
     return store;
 }
 
-function qsort(array, begin, end, comparison)
-{
+function qsort(array, begin, end, comparison){
     if(end-1>begin) {
         var pivot=begin+Math.floor(Math.random()*(end-begin));
 
@@ -182,9 +182,19 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
                     var re = /^[^\d]*([\d]*)[.]*/i;
                     $scope.my_zip = address.match(re)[1];
                     $scope.$apply();
-                    //populateData();
+
+                    //Now let's create a map for viewing pleasure
+                    var mapProp = {
+                        center: latlng,
+                        zoom: 5,
+                        mapTypeId: google.maps.MapTypeId.HYBRID
+                    };
+                    var viewMap = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+                    var marker = new google.maps.Marker({position:latlng});
+                    marker.setMap(viewMap);
                 }
             });
+            
         }
 
         function error() {
@@ -367,6 +377,7 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
         }
         geo_failed = false;
         $scope.resetData();
+        $scope.zipToMap();
         $location.path("#/");
     }
 
@@ -404,6 +415,34 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
             }
         }
     }
+
+    //Reset the google map once you type in a zip code
+    
+
+    $scope.zipToMap = function() {
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({'address' : $scope.my_zip}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                results[0].geometry.location;
+                r = results[0].geometry.location;
+                var lat = r.k;
+                var lng = r.B;
+                var latlng = new google.maps.LatLng(lat, lng);
+                //Now let's create a map for viewing pleasure
+                var mapProp = {
+                    center: latlng,
+                    zoom: 5,
+                    mapTypeId: google.maps.MapTypeId.HYBRID
+                };
+                var viewMap = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+                var marker = new google.maps.Marker({position:latlng});
+                marker.setMap(viewMap);
+            } else {
+                console.log("Google map lookup failed");
+            }
+        });
+    }
+
 
     //Try to initially get the geo data
     geolocationData();
