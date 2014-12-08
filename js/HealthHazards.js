@@ -133,9 +133,6 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
     //enable abort on the http call
     var canceler;
 
-    //show or hide the info on front page
-    $scope.show_info = true;
-
     //Set up resources:
     //$scope.resetData();
     // // Local tap water data
@@ -324,7 +321,7 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
                         }
                         resource.dataLength = xml[resource.tableName].length;
                         resource.violationsLength = resource_data.length;
-                        resource.viewing = "Open Violations";
+                        resource.viewing = "Current Violations";
                         if(resource.violations.length > 0){
                             resource.clean = false;
                         } else {
@@ -373,14 +370,6 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
         $location.path("#/");
     }
 
-    $scope.info = function(){
-        if($scope.show_info === true){
-            $scope.show_info = false;
-        } else {
-            $scope.show_info = true;
-        }
-    }
-
     $scope.resetData = function(){
         for(var i = 0; i < resources.length; i++){
             $scope[resources[i]] = {
@@ -399,10 +388,10 @@ app.controller("BodyController", function($scope, $http, $q, $location) {
     }
 
     $scope.changeView = function(resource){
-        if(resource.viewing === "Open Violations"){
-            resource.viewing = "Open and Closed Violations";
+        if(resource.viewing === "Current Violations"){
+            resource.viewing = "All Violations";
         } else {
-            resource.viewing = "Open Violations";
+            resource.viewing = "Current Violations";
         }
     }
 

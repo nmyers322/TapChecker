@@ -2,9 +2,10 @@
 <html lang="en-US" data-ng-app="HealthHazard">
     <head>
         <meta charset="utf-8">
-        <title>EnviroCheck</title>
+        <title>TapChecker</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="img/favicon.ico" type="image/x-icon" sizes="16x16">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
         <!--[if lt IE 9]>
             <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
         <![endif]-->
@@ -81,7 +82,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </button>
-                  <a class="navbar-brand" href="#/"><img src="img/hazard_icon.png" width="30" height="20" style="float:left;"> EnviroCheck</a>
+                  <a class="navbar-brand" href="#/"><span class="glyphicon glyphicon-tint"></span>TapChecker</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                   <ul class="nav navbar-nav">
@@ -116,7 +117,14 @@
         </div>
         <div id="footer">
             <div class="container">
-                <p>Created by <a href="http://www.nsmyers.com">Nathanial Myers</a>.</p>
+                <div class="row">
+                    <div class="col-xs-9">
+                        <p>Created by <a href="http://www.nsmyers.com">N Myers</a>. </p>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="fb-share-button" data-href="http://unkk44e6b48e.nmyers322.koding.io/" data-layout="button"></div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -132,6 +140,15 @@
         <script src="js/xml2json.js"></script>
         <!-- inifinite scroll http://binarymuse.github.io/ngInfiniteScroll/demo_basic.html -->
         <script src="js/infinite-scroll.js"></script>
+        <!-- facebook share -->
+        <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
         <!-- app js -->
         <script src="js/HealthHazards.js"></script>
     </body>

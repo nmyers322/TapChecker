@@ -1,7 +1,7 @@
 <div id="water_buttons">
     <a href="#/"><button class="btn btn-primary">Go back</button></a>
     <button class="btn btn-primary" data-ng-click="changeView(water)" data-ng-show="water.viewing != ''">
-        {{water.viewing}}
+        Showing {{water.viewing}}
     </button>
 </div>
 
@@ -23,8 +23,8 @@
             </div>
         </div>
     </div>
-    <div infinite-scroll="loadMore(water, 'violations')" infinite-scroll-distance="1" infinite-scroll-disabled="water.viewing!='Open Violations'">
-        <div class="row" data-ng-repeat="row in water.violations" data-ng-show="water.viewing=='Open Violations'">
+    <div infinite-scroll="loadMore(water, 'violations')" infinite-scroll-distance="1" infinite-scroll-disabled="water.viewing!='Current Violations'">
+        <div class="row" data-ng-repeat="row in water.violations" data-ng-show="water.viewing=='Current Violations'">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -81,8 +81,8 @@
             </table>
         </div>
     </div>
-    <div infinite-scroll="loadMore(water, 'data')" infinite-scroll-distance="1" infinite-scroll-disabled="water.viewing != 'Open and Closed Violations'">
-        <div class="row" data-ng-repeat="row in water.data" data-ng-show="water.viewing=='Open and Closed Violations'">
+    <div infinite-scroll="loadMore(water, 'data')" infinite-scroll-distance="1" infinite-scroll-disabled="water.viewing != 'All Violations'">
+        <div class="row" data-ng-repeat="row in water.data" data-ng-show="water.viewing=='All Violations'">
             <table class="table table-hover">
                 <thead>
                     <tr>
